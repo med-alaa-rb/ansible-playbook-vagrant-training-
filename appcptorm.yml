@@ -1,0 +1,57 @@
+- hosts: webservers
+  become: yes
+
+  tasks:
+  - name: "apt-get update"
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+
+
+
+
+
+- hosts: database
+  become: yes
+
+
+  tasks:
+      
+    - name: copying db server files with playbook
+      copy:
+        src: /vagrant/miniApp/server
+        dest: /home/vagrant/
+        owner: vagrant 
+        group: vagrant      
+        mode: u=rwX,g=rX,o=rX recurse=yes
+              
+   
+    - name: Make install app dependencies
+      become_user: vagrant 
+      command: chdir=/home/vagrant/server/ {{ item }}
+      with_items: 
+        - npm i
+        - npm update
+        - npm audit 
+        - node index.js    
+          
+
+
+- hosts: nodeServer
+  become: yes
+
+
+  tasks:
+    - name: copying angular files with playbook
+      copy:
+        src: /vagrant/miniApp/client/
+        dest: /home/vagrant
+
+    
+                
+    - name: Make install git source
+      become_user: yes
+      command: /home/vagrant/client/miniapp "{{item}}"
+      with_items:
+        - npm i
+        - ng serve                

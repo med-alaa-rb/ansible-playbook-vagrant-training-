@@ -1,0 +1,13 @@
+[control]
+ansible-control
+
+[webservers]
+nodeServer
+ 
+
+[database]
+db
+
+[webstack:children]
+webservers
+database
